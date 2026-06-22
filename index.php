@@ -17,11 +17,11 @@
 
     if (isset($_GET["remover"])) {
       $i = $_GET["remover"];
-      
+
       unset($_SESSION["produtos"][$i]);
 
       $_SESSION["produtos"] = array_values($_SESSION["produtos"]);
-
+      
       header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]));
       exit;
     }
@@ -30,6 +30,7 @@
       $_SESSION["produtos"] = [];
 
       header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]));
+      exit;
     }
 
     if (isset($_POST["nome"], $_POST["preco"], $_POST["estoque"])) {
@@ -82,6 +83,7 @@
               >Escolher imagem</label>
               <input 
                 type="file" 
+                accept=".webm,.jpg,.jpeg,.png"
                 name="imagem" 
                 id="imagem" 
                 class="hidden"
@@ -93,6 +95,7 @@
                 name="nome" 
                 id="nome" 
                 value="<?= htmlspecialchars($_POST["nome"] ?? "") ?>"
+                minlength="3"
                 placeholder=""
                 required
                 class="peer flex flex-1 h-8 w-full border border-[gray] rounded-md !pl-1 transition-all duration-300 ease-in-out"
