@@ -78,7 +78,7 @@
             <div>
               <label 
                 for="imagem" 
-                class="flex items-center justify-center self-center aspect-1/1 h-32 w-32 rounded-lg bg-[darkgray] hover:bg-[gray] text-white font-semibold border border-black cursor-pointer"
+                class="flex items-center justify-center self-center aspect-1/1 h-32 w-32 rounded-lg bg-[darkgray] hover:bg-[gray] text-sm text-white font-semibold border border-black cursor-pointer transition-[background-color] duration-300 ease-in-out"
               >Escolher imagem</label>
               <input 
                 type="file" 
@@ -95,7 +95,7 @@
                 value="<?= htmlspecialchars($_POST["nome"] ?? "") ?>"
                 placeholder=""
                 required
-                class="peer flex flex-1 h-8 w-full border border-[gray] rounded-md !pl-1"
+                class="peer flex flex-1 h-8 w-full border border-[gray] rounded-md !pl-1 transition-all duration-300 ease-in-out"
               >
               <label 
                 for="nome"
@@ -138,7 +138,7 @@
             </div>
             <button 
               type="submit"
-              class="h-8 w-full bg-[#00BB77] hover:bg-[#008000] text-white max-w-64 border border-black rounded-md font-semibold cursor-pointer"
+              class="h-8 w-full bg-[#00BB77] hover:bg-[#008000] text-white max-w-64 border border-black rounded-md font-semibold cursor-pointer transition-[background-color] duration-300 ease-in-out"
             >&#x002B Cadastrar</button>
           </div>
         </fieldset>
@@ -151,7 +151,7 @@
               type="submit" 
               name="limpar" 
               id="limpar"
-              class="!px-4 !py-1 bg-[#FF2C2C] hover:bg-[#D20A2E] text-white font-semibold border border-black rounded-md cursor-pointer"
+              class="!px-4 !py-1 bg-[#FF2C2C] hover:bg-[#D20A2E] text-white font-semibold border border-black rounded-md cursor-pointer transition-[background-color] duration-300 ease-in-out"
             >&#x1F5D1 Limpar tudo</button>
           </form>
         </div>
@@ -168,10 +168,10 @@
                       <pre class=\"absolute top-1 left-1 bg-[#00000085] text-white rounded-md text-xs font-semibold !px-2\">ID do Produto: $i</pre>
                       <img 
                         src=\"" . ($produto["imagem"] ? "uploads/{$produto["imagem"]}" : "https://placehold.co/600x600?text={$produto["nome"]}") . "\" 
-                        loading=\"lazy\" 
-                        fetchpriority=\"low\"
-                        decoding=\"async\"
-                        class=\"aspect-1/1 max-w-60 object-cover border border-[gray] rounded-md overflow-hidden\"
+                        loading=\"eager\" 
+                        fetchpriority=\"high\"
+                        decoding=\"sync\"
+                        class=\"aspect-1/1 max-w-60 object-cover border border-[gray] rounded-md overflow-hidden select-none pointer-events-none\"
                       >
                     </div>
                     <div class=\"flex flex-col gap-2\">
@@ -180,7 +180,7 @@
                       <h1>Quantidade: <strong>{$produto["estoque"]}x</strong></h1>
                       <a 
                         href=\"?remover=$i\"
-                        class=\"w-fit bg-[#FF2C2C] hover:bg-[#D20A2E] !p-2 border border-black rounded-md\"
+                        class=\"w-fit bg-[#FF2C2C] hover:bg-[#D20A2E] !p-2 border border-black rounded-md transition-[background-color] duration-300 ease-in-out\"
                       >&#x1F5D1</a>
                     </div>
                   </div>
