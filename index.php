@@ -11,38 +11,59 @@
   <? 
     require_once("cadProd.php");
 
-    if (isset($_SESSION["mensagem"])) {
-      echo "
-        <div 
-          id=\"mensagem\"
-          class=\"" . ($_SESSION["mensagem"]["tipo"] ===  "sucesso" ? "bg-[green]" : "bg-[red]") . " fixed bottom-4 right-4 w-fit text-white font-semibold rounded-md !p-2\"
-        >
-          <span>{$_SESSION["mensagem"]["texto"]}</span>
-        </div>
-
-        <script>
-          setTimeout(() => {
-            const msg = document.getElementById(\"mensagem\");
-            if (msg) {
-              msg.remove();
-            }
-          }, 8000)
-        </script>
-      ";
-
-      unset($_SESSION["cadastrado"]);
+    if (!isset($_SESSION['produtos'])) {
+      $_SESSION["produtos"] = [];
     }
+
+    if (isset($_GET["remover"])) {
+      $i = $_GET["remover"];
+      
+      unset($_SESSION["produtos"][$i]);
+
+      $_SESSION["produtos"] = array_values($_SESSION["produtos"]);
+
+      header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]));
+      exit;
+    }
+
+    if (isset($_POST["limpar"])) {
+      $_SESSION["produtos"] = [];
+
+      header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]));
+    }
+
+    if (isset($_POST["nome"], $_POST["preco"], $_POST["estoque"])) {
+      $imagemNome = null;
+
+      if (isset($_FILES["imagem"]) && $_FILES["imagem"]["error"] === 0) {
+        $pasta = "uploads/";
+
+        if (!is_dir($pasta)) {
+          mkdir($pasta);
+        }
+
+        $imagemNome = time() . "_" . $_FILES["imagem"]["name"];
+
+        $caminhoFinal = $pasta . $imagemNome;
+
+        move_uploaded_file($_FILES["imagem"]["tmp_name"], $caminhoFinal);
+      }
+
+      $_SESSION["produtos"][] = [
+        "imagem" => $imagemNome,
+        "nome" => $_POST["nome"],
+        "preco" => $_POST["preco"],
+        "estoque" => $_POST["estoque"]
+      ];
+
+      header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]));
+      exit;
+    }
+
+    $padrao = numfmt_create("pt-BR", NumberFormatter::CURRENCY);
   ?>
-  <header class="sticky top-0 z-1">
-    <div class="flex items-center justify-between mx-auto !p-4 bg-[#00BB77]">
-      <h1 class="text-white font-semibold">Projeto 1</h1>
-      <nav>
-        <ul class="flex items-center justify-center flex-row gap-4">
-          <li class="text-white font-semibold hover:underline"><li class="text-white font-semibold hover:underline"><a href="index.php" target="_parent" rel="referrer">Cadastrar</a></li></li>
-          <li class="text-white font-semibold hover:underline"><a href="telaProd.php" target="_parent" rel="referrer">Produtos</a></li>
-        </ul>
-      </nav>
-    </div>
+  <header>
+
   </header>
   <main>
     <section class="grid [grid-template-columns:auto_1fr] gap-4 !p-4">
