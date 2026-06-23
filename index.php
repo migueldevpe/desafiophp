@@ -8,69 +8,49 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <?
-    session_start();
+  <? 
+    require_once("cadProd.php");
 
-    if (!isset($_SESSION['produtos'])) {
-      $_SESSION["produtos"] = [];
+    if (isset($_SESSION["mensagem"])) {
+      echo "
+        <div 
+          id=\"mensagem\"
+          class=\"" . ($_SESSION["mensagem"]["tipo"] ===  "sucesso" ? "bg-[green]" : "bg-[red]") . " fixed bottom-4 right-4 w-fit text-white font-semibold rounded-md !p-2\"
+        >
+          <span>{$_SESSION["mensagem"]["texto"]}</span>
+        </div>
+
+        <script>
+          setTimeout(() => {
+            const msg = document.getElementById(\"mensagem\");
+            if (msg) {
+              msg.remove();
+            }
+          }, 8000)
+        </script>
+      ";
+
+      unset($_SESSION["cadastrado"]);
     }
-
-    if (isset($_GET["remover"])) {
-      $i = $_GET["remover"];
-      
-      unset($_SESSION["produtos"][$i]);
-
-      $_SESSION["produtos"] = array_values($_SESSION["produtos"]);
-
-      header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]));
-      exit;
-    }
-
-    if (isset($_POST["limpar"])) {
-      $_SESSION["produtos"] = [];
-
-      header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]));
-    }
-
-    if (isset($_POST["nome"], $_POST["preco"], $_POST["estoque"])) {
-      $imagemNome = null;
-
-      if (isset($_FILES["imagem"]) && $_FILES["imagem"]["error"] === 0) {
-        $pasta = "uploads/";
-
-        if (!is_dir($pasta)) {
-          mkdir($pasta);
-        }
-
-        $imagemNome = time() . "_" . $_FILES["imagem"]["name"];
-
-        $caminhoFinal = $pasta . $imagemNome;
-
-        move_uploaded_file($_FILES["imagem"]["tmp_name"], $caminhoFinal);
-      }
-
-      $_SESSION["produtos"][] = [
-        "imagem" => $imagemNome,
-        "nome" => $_POST["nome"],
-        "preco" => $_POST["preco"],
-        "estoque" => $_POST["estoque"]
-      ];
-
-      header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]));
-      exit;
-    }
-
-    $padrao = numfmt_create("pt-BR", NumberFormatter::CURRENCY);
   ?>
-  <header>
-
+  <header class="sticky top-0 z-1">
+    <div class="flex items-center justify-between mx-auto !p-4 bg-[#00BB77]">
+      <h1 class="text-white font-semibold">Projeto 1</h1>
+      <nav>
+        <ul class="flex items-center justify-center flex-row gap-4">
+          <li class="text-white font-semibold hover:underline"><li class="text-white font-semibold hover:underline"><a href="index.php" target="_parent" rel="referrer">Cadastrar</a></li></li>
+          <li class="text-white font-semibold hover:underline"><a href="telaProd.php" target="_parent" rel="referrer">Produtos</a></li>
+        </ul>
+      </nav>
+    </div>
   </header>
   <main>
-    <section>
+    <section class="grid [grid-template-columns:auto_1fr] gap-4 !p-4">
       <form 
         action="<?= htmlspecialchars($_SERVER["PHP_SELF"]) ?>" 
         method="post"
         enctype="multipart/form-data"
+        class="sticky top-[72px] h-fit w-fit min-w-[215px]"
       >
         <fieldset class="[all:revert] !w-fit !rounded-lg">
           <legend class="[all:revert] !text-xl !font-semibold">Cadastrar novo produto</legend>
@@ -78,10 +58,11 @@
             <div>
               <label 
                 for="imagem" 
-                class="flex items-center justify-center self-center aspect-1/1 h-32 w-32 rounded-lg bg-[darkgray] hover:bg-[gray] text-sm text-white font-semibold border border-black cursor-pointer transition-[background-color] duration-300 ease-in-out"
+                class="flex items-center justify-center self-center aspect-1/1 h-32 w-32 rounded-lg bg-[#DDDDDD] hover:bg-[#CCCCCC] text-sm text-[#999999] font-semibold border border-black cursor-pointer transition-[background-color] duration-300 ease-in-out"
               >Escolher imagem</label>
               <input 
                 type="file" 
+                accept=".webm,.jpg,.jpeg,.png"
                 name="imagem" 
                 id="imagem" 
                 class="hidden"
@@ -93,6 +74,7 @@
                 name="nome" 
                 id="nome" 
                 value="<?= htmlspecialchars($_POST["nome"] ?? "") ?>"
+                minlength="3"
                 placeholder=""
                 required
                 class="peer flex flex-1 h-8 w-full border border-[gray] rounded-md !pl-1 transition-all duration-300 ease-in-out"
@@ -102,6 +84,20 @@
                 class="peer-focus:text-black peer-focus:text-xs peer-focus:top-0 peer-focus:pointer-events-auto peer-focus:bg-white peer-not-placeholder-shown:top-0 peer-not-placeholder-shown:text-xs peer-not-placeholder-shown:text-black peer-not-placeholder-shown:pointer-events-auto peer-not-placeholder-shown:bg-white text-[gray] absolute top-1/2 left-1 -translate-y-1/2 bg-transparent rounded-md !px-1 transition-[font-size,top,background-color,color] duration-300 ease-in-out pointer-events-none"
               >Nome do produto</label>
               <!-- value="<? //htmlspecialchars($_POST["nome"]) ?>" -->
+            </div>
+            <div class="relative w-full max-w-64">
+              <textarea
+                name="descricao" 
+                id="descricao" 
+                value="<?= htmlspecialchars($_POST["nome"] ?? "") ?>"
+                minlength="3" 
+                placeholder=""
+                class="peer flex flex-1 h-8 w-full border border-[gray] rounded-md !pl-1 transition-all duration-300 ease-in-out"
+              ></textarea>
+              <label 
+                for="descricao"
+                class="peer-focus:text-black peer-focus:text-xs peer-focus:top-0 peer-focus:pointer-events-auto peer-focus:bg-white peer-not-placeholder-shown:top-0 peer-not-placeholder-shown:text-xs peer-not-placeholder-shown:text-black peer-not-placeholder-shown:pointer-events-auto peer-not-placeholder-shown:bg-white text-[gray] absolute top-1/2 left-1 -translate-y-1/2 bg-transparent rounded-md !px-1 transition-[font-size,top,background-color,color] duration-300 ease-in-out pointer-events-none"
+              >Descrição do produto</label>
             </div>
             <div class="relative w-full max-w-64">
               <input 
@@ -143,7 +139,7 @@
           </div>
         </fieldset>
       </form>
-      <div>
+      <div class="flex flex-col gap-2">
         <div class="flex items-center flex-row gap-2">
           <h1 class="[all:revert] !leading-1">Lista de produtos</h1>
           <form method="post">
@@ -155,14 +151,14 @@
             >&#x1F5D1 Limpar tudo</button>
           </form>
         </div>
-        <div class="flex flex-row gap-2 flex-wrap !p-2">
+        <div class="flex flex-row gap-2 flex-wrap">
           <?php 
             if (isset($_SESSION["produtos"])) {
               foreach ($_SESSION["produtos"] as $i => $produto) {
                 echo "
                   <div
                     key=\"$i\"
-                    class=\"grid [grid-template-rows:repeat(1fr,1fr)] gap-2 w-fit min-w-[258px] border border-[gray] !p-2 rounded-md\"
+                    class=\"grid [grid-template-rows:auto_1fr] gap-2 w-fit max-w-[258px] border border-[gray] !p-2 rounded-md\"
                   >
                     <div class=\"relative\">
                       <pre class=\"absolute top-1 left-1 bg-[#00000085] text-white rounded-md text-xs font-semibold !px-2\">ID do Produto: $i</pre>
@@ -171,16 +167,24 @@
                         loading=\"eager\" 
                         fetchpriority=\"high\"
                         decoding=\"sync\"
-                        class=\"aspect-1/1 max-w-60 object-cover border border-[gray] rounded-md overflow-hidden select-none pointer-events-none\"
+                        class=\"aspect-1/1 max-w-60 w-full object-cover border border-[gray] rounded-md overflow-hidden select-none pointer-events-none\"
                       >
                     </div>
-                    <div class=\"flex flex-col gap-2\">
+                    <div class=\"flex flex-col self-start gap-2 h-full\">
                       <h1>Produto: <strong>{$produto["nome"]}</strong></h1>
+                      <h1>Descrição: 
+                        <strong 
+                          title=\"" . ($produto["descricao"] ? $produto["descricao"] : "N/A") . "\" 
+                          class=\"line-clamp-2 break-all wrap-break-word wrap-anywhere\"
+                        >
+                          " . ($produto["descricao"] ? $produto["descricao"] : "N/A") . "
+                        </strong>
+                      </h1>
                       <h1>Valor: <strong>" . numfmt_format_currency($padrao, $produto["preco"], "BRL") . "</strong></h1>
                       <h1>Quantidade: <strong>{$produto["estoque"]}x</strong></h1>
                       <a 
                         href=\"?remover=$i\"
-                        class=\"w-fit bg-[#FF2C2C] hover:bg-[#D20A2E] !p-2 border border-black rounded-md transition-[background-color] duration-300 ease-in-out\"
+                        class=\"w-fit bg-[#FF2C2C] hover:bg-[#D20A2E] !p-2 border border-black rounded-md !mt-auto transition-[background-color] duration-300 ease-in-out\"
                       >&#x1F5D1</a>
                     </div>
                   </div>
@@ -188,7 +192,7 @@
               }
             } 
             
-            if (!isset($_SESSION["produtos"])) {
+            if (isset($_SESSION["produtos"]) && count($_SESSION["produtos"]) === 0) {
               echo "<pre>Não há produtos cadastrados.</pre>";
             }
 
