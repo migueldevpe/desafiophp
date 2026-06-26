@@ -1,19 +1,21 @@
-<? 
+<?php 
   session_start();
 
-  $_SESSION["mensagem"];
+  if (!isset($_SESSION["mensagem"])) {
+    $_SESSION["mensagem"] = null;
+  }
 
   if (!isset($_SESSION["produtos"])) {
     $_SESSION["produtos"] = [];
   }
 
   if (isset($_POST["limpar"])) {
-    $_SESSION["produtos"] = [];
-
     $_SESSION["mensagem"] = [
       "tipo" => "limpado",
-      "texto" => "Lista de produtos limpa."
+      "texto" => $_SESSION["produtos"] === [] ? "A lista de produtos já está limpa." : "Lista de produtos limpa."
     ];
+
+    $_SESSION["produtos"] = [];
 
     header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]));
     exit;

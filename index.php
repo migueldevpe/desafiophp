@@ -17,7 +17,7 @@
           id=\"mensagem\"
           class=\"" . ($_SESSION["mensagem"]["tipo"] ===  "sucesso" ? "bg-[green]" : "bg-[red]") . " fixed bottom-4 right-4 w-fit text-white font-semibold rounded-md !p-2\"
         >
-          <span>{$_SESSION["mensagem"]["texto"]}</span>
+          <span>&#8505 {$_SESSION["mensagem"]["texto"]}</span>
         </div>
 
         <script>
@@ -30,7 +30,7 @@
         </script>
       ";
 
-      unset($_SESSION["cadastrado"]);
+      unset($_SESSION["mensagem"]);
     }
   ?>
   <header class="sticky top-0 z-1">
